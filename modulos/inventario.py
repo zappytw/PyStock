@@ -12,7 +12,7 @@ def registrar_producto(nombre, categoria, unidad, precio, cantidad, existencias_
 
     idProducto = idMayor + 1
 
-    datosProducto = {"id": idProducto, "nombre": nombre, "categoria": categoria, "unidad": unidad, "precio": precio, "cantidad": cantidad, "existencias_minimas": {existencias_minimas}, "activo":True}
+    datosProducto = {"id": idProducto, "nombre": nombre, "categoria": categoria, "unidad": unidad, "precio": precio, "cantidad": cantidad, "existencias_minimas": existencias_minimas, "activo":True}
 
     guardar_datos(datosProducto, "inventario", "productos")
 

@@ -1,0 +1,26 @@
+[
+    {
+        "id_producto": 1,
+        "tipo_movimiento": "entrada",
+        "cantidad": 300,
+        "motivo": "Compra de producto",
+        "id_usuario": 1,
+        "fecha_movimiento": "2026-10-29 14:45:19.171055"
+    },
+    {
+        "id_producto": 1,
+        "tipo_movimiento": "salida",
+        "cantidad": 300,
+        "motivo": "Compra de producto",
+        "id_usuario": 1,
+        "fecha_movimiento": "2026-10-29 14:51:42.292090"
+    },
+    {
+        "id_producto": 1,
+        "tipo_movimiento": "salida",
+        "cantidad": 300,
+        "motivo": "Compra de producto",
+        "id_usuario": 1,
+        "fecha_movimiento": "2026-10-29 14:52:02.164703"
+    }
+]
