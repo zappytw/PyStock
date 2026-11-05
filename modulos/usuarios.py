@@ -2,16 +2,31 @@
 from core.almacenamiento import cargar_datos, guardar_datos, actualizar_datos
 
 
-def registrar_usuario(nombre, nombreUsuario, contrasena, rol):
+def existe_propietario():
 
     listaUsuarios = cargar_datos("usuarios", "usuarios")
+
+    for u in listaUsuarios:
+        if u["rol"] == "propietario":
+            return True
+
+    return False
+
+
+def registrar_propietario(nombre, nombreUsuario, contrasena):
+
+    listaUsuarios = cargar_datos("usuarios", "usuarios")
+
+    if existe_propietario() == True:
+        print("Error: Ya existe un propietario registrado")
+        return
 
     if nombre == "" or nombreUsuario == "" or contrasena == "":
         print("Error: Todos los campos son obligatorios")
         return
 
-    if rol != "propietario" and rol != "empleado":
-        print("Error: El rol ingresado no es valido")
+    if len(contrasena) < 8:
+        print("Error: La contrasena debe tener minimo 8 caracteres")
         return
 
     for u in listaUsuarios:
@@ -30,12 +45,54 @@ def registrar_usuario(nombre, nombreUsuario, contrasena, rol):
         "nombre": nombre,
         "nombreUsuario": nombreUsuario,
         "contrasena": contrasena,
-        "rol": rol,
+        "rol": "propietario",
         "activo": True
     }
 
     guardar_datos(datosUsuario, "usuarios", "usuarios")
-    print("Usuario registrado con exito!")
+
+    print("Propietario registrado con exito!")
+
+
+def registrar_usuario(nombre, nombreUsuario, contrasena, usuarioActual):
+
+    if usuarioActual == None or usuarioActual["rol"] != "propietario":
+        print("Error: Solo el propietario puede registrar empleados")
+        return
+
+    listaUsuarios = cargar_datos("usuarios", "usuarios")
+
+    if nombre == "" or nombreUsuario == "" or contrasena == "":
+        print("Error: Todos los campos son obligatorios")
+        return
+
+    if len(contrasena) < 8:
+        print("Error: La contrasena debe tener minimo 8 caracteres")
+        return
+
+    for u in listaUsuarios:
+        if u["nombreUsuario"].lower() == nombreUsuario.lower():
+            print("Error: El nombre de usuario ya existe")
+            return
+
+    idMayor = 0
+
+    for u in listaUsuarios:
+        if u["id"] > idMayor:
+            idMayor = u["id"]
+
+    datosUsuario = {
+        "id": idMayor + 1,
+        "nombre": nombre,
+        "nombreUsuario": nombreUsuario,
+        "contrasena": contrasena,
+        "rol": "empleado",
+        "activo": True
+    }
+
+    guardar_datos(datosUsuario, "usuarios", "usuarios")
+
+    print("Empleado registrado con exito!")
 
 
 def iniciar_sesion(nombreUsuario, contrasena):
@@ -44,17 +101,24 @@ def iniciar_sesion(nombreUsuario, contrasena):
 
     for u in listaUsuarios:
 
-        if u["nombreUsuario"] == nombreUsuario:
+        if u["nombreUsuario"].lower() == nombreUsuario.lower():
+
+            if u["activo"] == False:
+                print("Error: El usuario esta desactivado")
+                return None
 
             if u["contrasena"] == contrasena:
 
-                if u["activo"] == True:
-                    print("Inicio de sesion exitoso!")
-                    return u
+                print("Inicio de sesion exitoso!")
 
-                else:
-                    print("Error: El usuario esta desactivado")
-                    return None
+                usuarioActual = {
+                    "id": u["id"],
+                    "nombre": u["nombre"],
+                    "nombreUsuario": u["nombreUsuario"],
+                    "rol": u["rol"]
+                }
+
+                return usuarioActual
 
             else:
                 print("Error: Contrasena incorrecta")
@@ -64,11 +128,16 @@ def iniciar_sesion(nombreUsuario, contrasena):
     return None
 
 
-def consultar_usuarios():
+def consultar_usuarios(usuarioActual):
+
+    if usuarioActual == None or usuarioActual["rol"] != "propietario":
+        print("Error: No tiene permisos para consultar usuarios")
+        return
 
     listaUsuarios = cargar_datos("usuarios", "usuarios")
 
     for u in listaUsuarios:
+
         print(
             "ID:", u["id"],
             "| Nombre:", u["nombre"],
@@ -78,7 +147,12 @@ def consultar_usuarios():
         )
 
 
-def cambiar_estado_usuario(idUsuario, nuevoEstado):
+def editar_usuario(idUsuario, nuevoNombre, nuevoNombreUsuario,
+                   nuevaContrasena, usuarioActual):
+
+    if usuarioActual == None or usuarioActual["rol"] != "propietario":
+        print("Error: No tiene permisos para editar usuarios")
+        return
 
     listaUsuarios = cargar_datos("usuarios", "usuarios")
 
@@ -88,13 +162,66 @@ def cambiar_estado_usuario(idUsuario, nuevoEstado):
 
         if u["id"] == idUsuario:
 
-            u["activo"] = nuevoEstado
+            if u["rol"] == "propietario":
+                print("Error: No se puede editar al propietario")
+                return
+
+            for otroUsuario in listaUsuarios:
+                if otroUsuario["nombreUsuario"].lower() == nuevoNombreUsuario.lower():
+                    if otroUsuario["id"] != idUsuario:
+                        print("Error: El nombre de usuario ya existe")
+                        return
+
+            if nuevoNombre == "" or nuevoNombreUsuario == "":
+                print("Error: Los campos son obligatorios")
+                return
+
+            u["nombre"] = nuevoNombre
+            u["nombreUsuario"] = nuevoNombreUsuario
+
+            if nuevaContrasena != "":
+                if len(nuevaContrasena) < 8:
+                    print("Error: La contrasena debe tener minimo 8 caracteres")
+                    return
+
+                u["contrasena"] = nuevaContrasena
+
             encontrado = True
             break
 
     if encontrado == False:
-        print("Error: No se encontro el usuario")
+        print("Error: No se encontro el empleado")
 
     else:
         actualizar_datos(listaUsuarios, "usuarios", "usuarios")
-        print("Estado del usuario actualizado con exito!")
+        print("Usuario actualizado con exito!")
+
+
+def eliminar_usuario(idUsuario, usuarioActual):
+
+    if usuarioActual == None or usuarioActual["rol"] != "propietario":
+        print("Error: No tiene permisos para eliminar usuarios")
+        return
+
+    listaUsuarios = cargar_datos("usuarios", "usuarios")
+
+    encontrado = False
+
+    for u in listaUsuarios:
+
+        if u["id"] == idUsuario:
+
+            if u["rol"] == "propietario":
+                print("Error: No se puede eliminar al propietario")
+                return
+
+            u["activo"] = False
+            encontrado = True
+            break
+
+    if encontrado == False:
+        print("Error: No se encontro el empleado")
+
+    else:
+        actualizar_datos(listaUsuarios, "usuarios", "usuarios")
+        print("Empleado desactivado con exito!")
