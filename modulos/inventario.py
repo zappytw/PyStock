@@ -19,22 +19,28 @@ def registrar_producto(nombre, categoria, unidad, precio, cantidad, existencias_
     guardar_datos(datosProducto, "inventario", "productos")
     print("Producto agregado con exito!")
 
+
+
 def nueva_categoria(nombreCategoria):
     lista_categorias = cargar_datos("inventario", "categorias")
 
     if nombreCategoria.lower() not in lista_categorias:
-        lista_categorias.append(nombreCategoria.lower())
+        guardar_datos(nombreCategoria.lower(), "inventario", "categorias")
 
     else:
         print("Error: No se permiten duplicados, la categoria ya existe")
+
+
 
 def nueva_unidad(nombreUnidad):
     lista_unidades = cargar_datos("inventario", "unidades")
 
     if nombreUnidad.lower() not in lista_unidades:
-        lista_unidades.append(nombreUnidad.lower())
+        guardar_datos(nombreUnidad.lower(), "inventario", "categorias")
     else:
         print("Error: No se permiten duplicados, la unidad ya existe")
+
+
 
 def editar_producto(idProducto, dato, nuevoValor):
     archivoProductos = cargar_datos("inventario", "productos")
@@ -54,6 +60,12 @@ def editar_producto(idProducto, dato, nuevoValor):
         actualizar_datos(archivoProductos, "inventario", "productos")
         print("Dato actualizado con exito!")
 
-##Paso 5: Consulta, modificación y desactivación (RF 6)
+def cargar_productos(atributoABuscar, busqueda=""):
+    lista_productos = cargar_datos("inventario", "productos")
+    productos_filtrados = []
 
-#Consultar, editar datos y precios, y desactivar productos sin borrar su historial.
+    for p in lista_productos:
+        if busqueda in p[atributoABuscar]:
+            productos_filtrados.append(p)
+
+    return productos_filtrados
