@@ -1,0 +1,17 @@
+[
+    {
+        "id_venta": 1,
+        "carrito": [
+            {
+                "id_producto": 1,
+                "nombre_producto": "arroz",
+                "cantidad": 212,
+                "precio": 200
+            }
+        ],
+        "id_usuario": 123,
+        "fecha_venta": "2026-11-08 14:35:46.239806",
+        "total_venta": 42400,
+        "estado": "completada"
+    }
+]

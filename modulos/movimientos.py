@@ -19,19 +19,21 @@ def registrar_movimiento(id_producto, tipo, cantidadMovimiento, motivo, id_usuar
                 if p["id"] == id_producto:
                     encontrado = True
 
-                    if p["cantidad"] - cantidadMovimiento >= 0:
+                    if p["cantidad"] >= cantidadMovimiento: ##Que la cantidad del movimiento sea negativa o no se validara en main
                         p["cantidad"] -= cantidadMovimiento
                         break
                     else: 
                         print("Error: No hay suficientes existencias, el movimiento no se registro")
-                        return
+                        return False
         case _:
             print("Error: Tipo de movimiento erroneo")
-            return
+            return False
         
     if encontrado == False:
         print("Error: No se encontro el producto solicitado")
+        return False
     else:
         guardar_datos(datosMovimiento, "inventario", "movimientos")
         actualizar_datos(listaProductos, "inventario", "productos")
         print("Movimiento registrado con exito!")
+        return True

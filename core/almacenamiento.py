@@ -1,10 +1,11 @@
 import json
 
 def cargar_datos(nombreCarpeta, nombreArchivo):
-    with open(f"data/{nombreCarpeta}/{nombreArchivo}.json", "r", encoding="utf-8") as archivo:
-        archivoCargado = json.load(archivo)
-
-    return archivoCargado
+    try:
+        with open(f"data/{nombreCarpeta}/{nombreArchivo}.json", "r", encoding="utf-8") as archivo:
+            return json.load(archivo)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return []
 
 def guardar_datos(nuevoRegistro, nombreCarpeta, nombreArchivo):
     lista_datos = cargar_datos(nombreCarpeta, nombreArchivo)

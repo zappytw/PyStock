@@ -1,2 +1,12 @@
 [
+    {
+        "id": 1,
+        "nombre": "arroz",
+        "categoria": "despensa",
+        "unidad": "gramos",
+        "precio": 200,
+        "cantidad":212,
+        "existencias_minimas": 100,
+        "activo": true
+    }
 ]
