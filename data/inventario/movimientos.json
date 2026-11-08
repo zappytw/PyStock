@@ -22,5 +22,13 @@
         "motivo": "Compra de producto",
         "id_usuario": 1,
         "fecha_movimiento": "2026-10-29 14:52:02.164703"
+    },
+    {
+        "id_producto": 1,
+        "tipo_movimiento": "salida",
+        "cantidad": 212,
+        "motivo": "Venta #1",
+        "id_usuario": 123,
+        "fecha_movimiento": "2026-11-08 14:35:46.239042"
     }
 ]
