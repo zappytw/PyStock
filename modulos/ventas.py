@@ -68,7 +68,7 @@ def calcular_total(carrito):
     return total
 
 
-def registrar_venta(carrito, id_usuario):
+def registrar_venta(carrito, id_usuario, metodo_pago):
     if len(carrito) == 0:
         print("ERROR: El carrito esta vacio")
         return False
@@ -90,8 +90,16 @@ def registrar_venta(carrito, id_usuario):
         registrar_movimiento(p["id_producto"], "salida", p["cantidad"], f"Venta #{id_venta}", id_usuario)
 
     datos_venta = {"id_venta": id_venta, "carrito": carrito, "id_usuario": id_usuario,
-                "fecha_venta": str(datetime.now()), "total_venta": calcular_total(carrito),
+                "fecha_venta": str(datetime.now()), "total_venta": calcular_total(carrito),"metodo_pago": metodo_pago,
                 "estado": "completada"}
     guardar_datos(datos_venta, "inventario", "ventas")
     print(f"Venta #{id_venta} registrada. Total: ${calcular_total(carrito):,.0f}")
     return True
+
+def nuevo_metodo_de_pago(nombre_metodo_pago):
+    lista_metodos = cargar_datos("inventario", "metodosDePago")
+    if nombre_metodo_pago.lower() not in lista_metodos:
+        guardar_datos(nombre_metodo_pago.lower(), "inventario", "categorias")
+    
+    else:
+        print("Error: No se permiten duplicados, la categoria ya existe")
