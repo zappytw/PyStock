@@ -79,3 +79,4 @@ def obtener_producto(id_producto):
         if p["id"] == id_producto and p["activo"]:
             return p
     return None
+

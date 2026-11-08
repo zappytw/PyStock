@@ -103,3 +103,19 @@ def nuevo_metodo_de_pago(nombre_metodo_pago):
     
     else:
         print("Error: No se permiten duplicados, la categoria ya existe")
+
+def devolver_venta(id_venta, motivo, id_usuario):
+    lista_ventas = cargar_datos("inventario", "ventas")
+    encontrado = False
+    for v in lista_ventas:
+        if v["id_venta"] == id_venta:
+            venta = v
+            venta["estado"] = "devuelta"
+            encontrado = True
+    if encontrado:
+        for p in venta["carrito"]:
+            registrar_movimiento(p["id_producto"], "entrada", p["cantidad"],  motivo , id_usuario)
+
+        actualizar_datos(lista_ventas, "inventario", "ventas")
+    else:
+        print("ERROR: No se encontro la venta")
