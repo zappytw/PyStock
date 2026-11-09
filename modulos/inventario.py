@@ -1,6 +1,7 @@
 from core.almacenamiento import guardar_datos, cargar_datos, actualizar_datos
+from modulos.movimientos import *
 
-def registrar_producto(nombre, categoria, unidad, precio, cantidad, existencias_minimas):
+def registrar_producto(nombre, categoria, unidad, precio, cantidad, existencias_minimas, id_usuario = 1):
     archivoProductos = cargar_datos("inventario", "productos")
     archivoCategorias = cargar_datos("inventario", "categorias")
     archivoUnidades = cargar_datos("inventario", "unidades")
@@ -17,10 +18,11 @@ def registrar_producto(nombre, categoria, unidad, precio, cantidad, existencias_
     idProducto = idMayor + 1
 
     datosProducto = {"id": idProducto, "nombre": nombre.lower(), "categoria": categoria.lower(),
-                    "unidad": unidad.lower(), "precio": precio, "cantidad": cantidad, 
+                    "unidad": unidad.lower(), "precio": precio, "cantidad": 0, 
                     "existencias_minimas": existencias_minimas, "activo":True}
-
     guardar_datos(datosProducto, "inventario", "productos")
+    if cantidad > 0:
+            registrar_movimiento(idProducto, "entrada", cantidad, "Nuevo producto", id_usuario)
     print("Producto agregado con exito!")
 
 
@@ -52,7 +54,7 @@ def editar_producto(idProducto, dato_a_editar, nuevoValor):
     for p in archivoProductos:
         if p["id"] == idProducto:
             if dato_a_editar.lower() in p:
-                p[dato_a_editar.lower()] = nuevoValor.lower().strip() if type(nuevoValor) == str else nuevoValor.strip()
+                p[dato_a_editar.lower()] = nuevoValor.lower().strip() if type(nuevoValor) == str else nuevoValor
                 encontrado = True
                 break
             else:

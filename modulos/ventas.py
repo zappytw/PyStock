@@ -6,7 +6,7 @@ from datetime import datetime
 def verificar_disponibilidad(id_producto, cantidad):
     producto = obtener_producto(id_producto)
 
-    if producto != []:
+    if producto is not None:
         cantidadDisponible = producto["cantidad"]
         if cantidadDisponible >= cantidad:
             haySuficiente = True
@@ -79,7 +79,7 @@ def registrar_venta(carrito, id_usuario, metodo_pago):
             print(f"ERROR: {p['nombre_producto']} no tiene suficientes existencias. Venta no registrada")
             return False
 
-    datos_ventas = cargar_datos("inventario", "ventas")
+    datos_ventas = cargar_datos("ventas", "ventas")
     id_mayor = 0
     for v in datos_ventas:
         if v["id_venta"] > id_mayor:
@@ -90,32 +90,35 @@ def registrar_venta(carrito, id_usuario, metodo_pago):
         registrar_movimiento(p["id_producto"], "salida", p["cantidad"], f"Venta #{id_venta}", id_usuario)
 
     datos_venta = {"id_venta": id_venta, "carrito": carrito, "id_usuario": id_usuario,
-                "fecha_venta": str(datetime.now()), "total_venta": calcular_total(carrito),"metodo_pago": metodo_pago,
+                "fecha": str(datetime.now()), "total": calcular_total(carrito),"metodo_pago": metodo_pago,
                 "estado": "completada"}
-    guardar_datos(datos_venta, "inventario", "ventas")
+    guardar_datos(datos_venta, "ventas", "ventas")
     print(f"Venta #{id_venta} registrada. Total: ${calcular_total(carrito):,.0f}")
     return True
 
 def nuevo_metodo_de_pago(nombre_metodo_pago):
     lista_metodos = cargar_datos("inventario", "metodosDePago")
     if nombre_metodo_pago.lower() not in lista_metodos:
-        guardar_datos(nombre_metodo_pago.lower(), "inventario", "categorias")
+        guardar_datos(nombre_metodo_pago.lower(), "inventario", "metodosDePago")
     
     else:
         print("Error: No se permiten duplicados, la categoria ya existe")
 
 def devolver_venta(id_venta, motivo, id_usuario):
-    lista_ventas = cargar_datos("inventario", "ventas")
+    lista_ventas = cargar_datos("ventas", "ventas")
     encontrado = False
     for v in lista_ventas:
         if v["id_venta"] == id_venta:
             venta = v
-            venta["estado"] = "devuelta"
             encontrado = True
-    if encontrado:
+            break
+    if encontrado and venta["estado"] != "devuelta":
+        
         for p in venta["carrito"]:
             registrar_movimiento(p["id_producto"], "entrada", p["cantidad"],  motivo , id_usuario)
-
-        actualizar_datos(lista_ventas, "inventario", "ventas")
+        venta["estado"] = "devuelta"
+        actualizar_datos(lista_ventas, "ventas", "ventas")
+    elif encontrado:
+        print("ERROR: la venta ya esta devuelta")
     else:
         print("ERROR: No se encontro la venta")
